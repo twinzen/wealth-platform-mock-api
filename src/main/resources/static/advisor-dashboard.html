@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WealthPro Advisor Platform</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #0f1f3d;
+  --navy-light: #162850;
+  --navy-hover: #1d3563;
+  --sidebar-w:  240px;
+  --accent:     #2563eb;
+  --accent-lt:  #dbeafe;
+  --green:      #16a34a;
+  --green-lt:   #dcfce7;
+  --red:        #dc2626;
+  --red-lt:     #fee2e2;
+  --yellow:     #d97706;
+  --yellow-lt:  #fef3c7;
+  --gray-50:    #f9fafb;
+  --gray-100:   #f3f4f6;
+  --gray-200:   #e5e7eb;
+  --gray-300:   #d1d5db;
+  --gray-400:   #9ca3af;
+  --gray-500:   #6b7280;
+  --gray-600:   #4b5563;
+  --gray-700:   #374151;
+  --gray-900:   #111827;
+  --white:      #ffffff;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,.10);
+  --shadow:     0 4px 12px rgba(0,0,0,.12);
+  --shadow-lg:  0 8px 24px rgba(0,0,0,.16);
+  --radius:     10px;
+  --radius-sm:  6px;
+  font-size: 14px;
+}
+
+html, body { height: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+  background: var(--gray-100);
+  color: var(--gray-900);
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ── SIDEBAR ──────────────────────────────── */
+#sidebar {
+  width: var(--sidebar-w);
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-logo .logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 34px; height: 34px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 16px; color: #fff;
+}
+.logo-text { color: #fff; font-size: 16px; font-weight: 700; line-height: 1.2; }
+.logo-sub { color: rgba(255,255,255,.45); font-size: 11px; font-weight: 400; }
+
+.sidebar-section-label {
+  padding: 18px 20px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: rgba(255,255,255,.65);
+  font-size: 13.5px;
+  font-weight: 500;
+  border-left: 3px solid transparent;
+  transition: background .15s, color .15s;
+  user-select: none;
+}
+.nav-item:hover { background: var(--navy-hover); color: #fff; }
+.nav-item.active {
+  background: var(--navy-light);
+  color: #fff;
+  border-left-color: var(--accent);
+}
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .8; }
+.nav-item.active svg { opacity: 1; }
+
+.sidebar-account {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.account-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.35);
+  margin-bottom: 8px;
+}
+.account-select {
+  width: 100%;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+}
+.account-select option { background: var(--navy-light); color: #fff; }
+.account-select:focus { border-color: var(--accent); }
+.advisor-info {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.advisor-avatar {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.advisor-name { color: rgba(255,255,255,.8); font-size: 12px; font-weight: 600; }
+.advisor-role { color: rgba(255,255,255,.4); font-size: 11px; }
+
+/* ── MAIN ─────────────────────────────────── */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-size: 17px; font-weight: 700; color: var(--gray-900); }
+.topbar-sub { font-size: 12px; color: var(--gray-500); margin-top: 1px; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.current-time {
+  font-size: 12px; color: var(--gray-500);
+  background: var(--gray-100);
+  padding: 5px 10px; border-radius: 20px;
+}
+
+.content { padding: 24px 28px; flex: 1; }
+
+/* ── SECTIONS ─────────────────────────────── */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── CARDS ────────────────────────────────── */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label { font-size: 11.5px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--gray-900); margin-top: 6px; line-height: 1; }
+.stat-change { font-size: 12px; margin-top: 6px; font-weight: 600; }
+.stat-change.up { color: var(--green); }
+.stat-change.down { color: var(--red); }
+
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.card-title { font-size: 14px; font-weight: 700; color: var(--gray-900); }
+.card-body { padding: 20px; }
+
+/* ── TABLE ────────────────────────────────── */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 10px 14px;
+  background: var(--gray-50);
+  border-bottom: 1px solid var(--gray-200);
+  white-space: nowrap;
+}
+thead th.right { text-align: right; }
+tbody tr { border-bottom: 1px solid var(--gray-100); transition: background .1s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: var(--gray-50); }
+tbody td { padding: 11px 14px; font-size: 13px; color: var(--gray-700); white-space: nowrap; }
+tbody td.right { text-align: right; }
+tbody td.mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12.5px; }
+
+/* ── BADGES ───────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.badge-green { background: var(--green-lt); color: var(--green); }
+.badge-red { background: var(--red-lt); color: var(--red); }
+.badge-yellow { background: var(--yellow-lt); color: var(--yellow); }
+.badge-blue { background: var(--accent-lt); color: var(--accent); }
+.badge-gray { background: var(--gray-100); color: var(--gray-600); }
+
+/* ── BUTTONS ──────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background .15s, opacity .15s;
+  white-space: nowrap;
+}
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+.btn-success { background: var(--green); color: #fff; }
+.btn-success:hover:not(:disabled) { background: #15803d; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: #b91c1c; }
+.btn-ghost {
+  background: transparent;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-300);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--gray-100); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
+/* ── FORM ─────────────────────────────────── */
+.form-grid { display: grid; gap: 16px; }
+.form-grid-2 { grid-template-columns: 1fr 1fr; }
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+.form-control {
+  padding: 9px 12px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  color: var(--gray-900);
+  background: var(--white);
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+  width: 100%;
+}
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+.form-control::placeholder { color: var(--gray-400); }
+select.form-control { cursor: pointer; }
+
+.order-side-group { display: flex; gap: 0; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--gray-300); }
+.order-side-btn {
+  flex: 1;
+  padding: 9px 12px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--white);
+  color: var(--gray-600);
+  border: none;
+  transition: background .15s, color .15s;
+}
+.order-side-btn.buy.active { background: var(--green); color: #fff; }
+.order-side-btn.sell.active { background: var(--red); color: #fff; }
+.order-side-btn:not(.active):hover { background: var(--gray-100); }
+
+/* ── FILTERS ──────────────────────────────── */
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-row .form-control { width: auto; min-width: 140px; }
+
+/* ── PAGINATION ───────────────────────────── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--gray-200);
+  font-size: 12.5px;
+  color: var(--gray-500);
+}
+.page-btns { display: flex; gap: 4px; }
+.page-btn {
+  padding: 5px 10px;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-600);
+  transition: background .1s;
+}
+.page-btn:hover:not(:disabled) { background: var(--gray-100); }
+.page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.page-btn:disabled { opacity: .4; cursor: not-allowed; }
+
+/* ── NOTIFICATION ─────────────────────────── */
+#toast-container {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  min-width: 280px;
+  max-width: 380px;
+  background: var(--gray-900);
+  color: #fff;
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 13px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: slideUp .2s ease;
+}
+.toast.success { border-left: 4px solid var(--green); }
+.toast.error   { border-left: 4px solid var(--red); }
+.toast.info    { border-left: 4px solid var(--accent); }
+.toast-icon { font-size: 16px; flex-shrink: 0; line-height: 1.4; }
+.toast-msg { flex: 1; line-height: 1.5; }
+@keyframes slideUp { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* ── MODAL ────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn .15s ease;
+}
+.modal-overlay.hidden { display: none; }
+.modal {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 480px;
+  max-width: 95vw;
+  overflow: hidden;
+}
+.modal-header {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-size: 15px; font-weight: 700; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  color: var(--gray-400); font-size: 20px; line-height: 1;
+  padding: 2px; border-radius: 4px;
+}
+.modal-close:hover { color: var(--gray-700); background: var(--gray-100); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 16px 20px; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 10px; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── EMPTY STATE ──────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--gray-400);
+}
+.empty-state svg { width: 48px; height: 48px; margin-bottom: 12px; opacity: .4; }
+.empty-state p { font-size: 14px; font-weight: 500; }
+
+/* ── LOADING ──────────────────────────────── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--gray-200);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row td { text-align: center; padding: 28px; color: var(--gray-400); }
+
+/* ── QUOTES GRID ──────────────────────────── */
+.quotes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.quote-tile {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  padding: 14px 16px;
+  transition: box-shadow .15s;
+  cursor: pointer;
+}
+.quote-tile:hover { box-shadow: var(--shadow); }
+.quote-tile.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,.12); }
+.qt-symbol { font-size: 15px; font-weight: 800; color: var(--gray-900); }
+.qt-name { font-size: 11px; color: var(--gray-500); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qt-price { font-size: 20px; font-weight: 700; color: var(--gray-900); margin-top: 8px; }
+.qt-change { font-size: 12px; font-weight: 600; margin-top: 3px; }
+.qt-change.up { color: var(--green); }
+.qt-change.down { color: var(--red); }
+
+/* ── ORDER CARD ───────────────────────────── */
+.order-list { display: flex; flex-direction: column; gap: 10px; }
+.order-card {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.order-card-body { flex: 1; min-width: 0; }
+.order-card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.order-symbol { font-size: 15px; font-weight: 800; }
+.order-meta { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+.order-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ── TABS ─────────────────────────────────── */
+.tabs { display: flex; border-bottom: 2px solid var(--gray-200); margin-bottom: 20px; gap: 2px; }
+.tab {
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-500);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color .15s;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--gray-900); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── P&L MINI BAR ─────────────────────────── */
+.pnl-bar { width: 80px; height: 4px; background: var(--gray-200); border-radius: 2px; margin-top: 4px; overflow: hidden; }
+.pnl-bar-fill { height: 100%; border-radius: 2px; }
+.pnl-bar-fill.positive { background: var(--green); }
+.pnl-bar-fill.negative { background: var(--red); }
+
+/* ── RESPONSIVE ───────────────────────────── */
+@media (max-width: 900px) {
+  #sidebar { width: 56px; }
+  .sidebar-logo .logo-text, .sidebar-logo .logo-sub,
+  .sidebar-section-label, .nav-item span,
+  .sidebar-account .account-label, .account-select,
+  .advisor-info .advisor-name, .advisor-info .advisor-role { display: none; }
+  .nav-item { justify-content: center; padding: 12px; }
+  .advisor-info { justify-content: center; }
+  .advisor-info .advisor-name, .advisor-info .advisor-role { display: none; }
+  #main { margin-left: 56px; }
+  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
+<nav id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">W</div>
+      <div>
+        <div class="logo-text">WealthPro</div>
+        <div class="logo-sub">Advisor Platform</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">Workspace</div>
+  <div class="nav-item active" data-section="overview">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    <span>Overview</span>
+  </div>
+  <div class="nav-item" data-section="portfolio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+    <span>Portfolio</span>
+  </div>
+  <div class="nav-item" data-section="quotes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+    <span>Market Quotes</span>
+  </div>
+  <div class="nav-item" data-section="transactions">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    <span>Transactions</span>
+  </div>
+
+  <div class="sidebar-section-label">Trading</div>
+  <div class="nav-item" data-section="placeorder">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    <span>Place Order</span>
+  </div>
+  <div class="nav-item" data-section="orders">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+    <span>Order Management</span>
+  </div>
+
+  <div class="sidebar-account">
+    <div class="account-label">Active Account</div>
+    <select class="account-select" id="globalAccount">
+      <option value="ACC-001">ACC-001</option>
+      <option value="ACC-002">ACC-002</option>
+    </select>
+    <div class="advisor-info" style="margin-top:12px">
+      <div class="advisor-avatar">JD</div>
+      <div>
+        <div class="advisor-name">Jane Doe</div>
+        <div class="advisor-role">Senior Advisor</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbarTitle">Overview</div>
+      <div class="topbar-sub" id="topbarSub">Wealth management dashboard</div>
+    </div>
+    <div class="topbar-actions">
+      <div class="current-time" id="clock">--</div>
+      <button class="btn btn-ghost btn-sm" onclick="refreshCurrent()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ── OVERVIEW ──────────────────────────── -->
+    <div id="section-overview" class="section active">
+      <div class="stat-grid" id="overviewStats">
+        <div class="stat-card"><div class="stat-label">Total Holdings Value</div><div class="stat-value" id="ov-total">—</div><div class="stat-change" id="ov-change"></div></div>
+        <div class="stat-card"><div class="stat-label">Positions</div><div class="stat-value" id="ov-positions">—</div><div class="stat-change up" id="ov-pos-label">Across account</div></div>
+        <div class="stat-card"><div class="stat-label">Open Orders</div><div class="stat-value" id="ov-open">—</div><div class="stat-change" id="ov-open-label">In this account</div></div>
+        <div class="stat-card"><div class="stat-label">Total Transactions</div><div class="stat-value" id="ov-txns">—</div><div class="stat-change up">Historical records</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Top Holdings</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigateTo('portfolio')">View All</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Symbol</th><th class="right">Shares</th><th class="right">Mkt Value</th><th class="right">P&amp;L</th></tr></thead>
+              <tbody id="overviewHoldings"><tr class="loading-row"><td colspan="4"><span class="spinner"></span></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recent Transactions</span>
+            <button class="btn btn-ghost btn-sm" onclick="navigateTo('transactions')">View All</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Symbol</th><th>Type</th><th class="right">Amount</th><th>Status</th></tr></thead>
+              <tbody id="overviewTxns"><tr class="loading-row"><td colspan="4"><span class="spinner"></span></td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Market Snapshot</span><button class="btn btn-ghost btn-sm" onclick="navigateTo('quotes')">Full Quotes</button></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Symbol</th><th>Name</th><th>Sector</th><th class="right">Price</th><th class="right">Change</th><th class="right">Change %</th><th class="right">Volume</th></tr></thead>
+            <tbody id="overviewQuotes"><tr class="loading-row"><td colspan="7"><span class="spinner"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PORTFOLIO ──────────────────────────── -->
+    <div id="section-portfolio" class="section">
+      <div class="stat-grid" id="portfolioStats">
+        <div class="stat-card"><div class="stat-label">Market Value</div><div class="stat-value" id="pf-value">—</div></div>
+        <div class="stat-card"><div class="stat-label">Unrealized P&amp;L</div><div class="stat-value" id="pf-pnl">—</div><div class="stat-change" id="pf-pnl-pct"></div></div>
+        <div class="stat-card"><div class="stat-label">Positions</div><div class="stat-value" id="pf-count">—</div></div>
+        <div class="stat-card"><div class="stat-label">Cost Basis</div><div class="stat-value" id="pf-cost">—</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Holdings</span>
+          <div class="filter-row">
+            <input type="text" class="form-control" id="holdingSearch" placeholder="Search symbol…" oninput="filterHoldings()" style="width:160px" />
+            <button class="btn btn-primary btn-sm" onclick="loadPortfolio()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th><th>Company</th><th class="right">Shares</th>
+                <th class="right">Avg Cost</th><th class="right">Current Price</th>
+                <th class="right">Market Value</th><th class="right">Unrealized P&L</th>
+                <th class="right">Return %</th><th>Sector</th>
+              </tr>
+            </thead>
+            <tbody id="holdingsBody"><tr class="loading-row"><td colspan="9"><span class="spinner"></span></td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── QUOTES ──────────────────────────────── -->
+    <div id="section-quotes" class="section">
+      <div class="card-header" style="background:var(--white);border-radius:var(--radius);border:1px solid var(--gray-200);padding:14px 20px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between;">
+        <span class="card-title">Live Market Quotes</span>
+        <div class="filter-row">
+          <input type="text" class="form-control" id="quoteSearch" placeholder="Search symbol or name…" oninput="filterQuotes()" style="width:200px"/>
+          <button class="btn btn-primary btn-sm" onclick="loadQuotes()">Refresh Quotes</button>
+        </div>
+      </div>
+      <div class="quotes-grid" id="quotesGrid"></div>
+      <div class="card" id="quoteDetailCard" style="display:none">
+        <div class="card-header"><span class="card-title" id="quoteDetailTitle">Quote Detail</span><button class="btn btn-ghost btn-sm" onclick="document.getElementById('quoteDetailCard').style.display='none'">Close</button></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px" id="quoteDetailBody"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TRANSACTIONS ───────────────────────── -->
+    <div id="section-transactions" class="section">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Transaction History</span>
+          <div class="filter-row">
+            <input type="text" class="form-control" id="txnSymbolFilter" placeholder="Symbol (e.g. AAPL)" style="width:160px" />
+            <button class="btn btn-primary btn-sm" onclick="loadTransactions()">Search</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearTxnFilter()">Clear</button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Symbol</th><th>Type</th><th class="right">Qty</th>
+                <th class="right">Price</th><th class="right">Total</th>
+                <th>Status</th><th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="txnBody"><tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="txnPagination">
+          <span id="txnPageInfo">—</span>
+          <div class="page-btns" id="txnPageBtns"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PLACE ORDER ────────────────────────── -->
+    <div id="section-placeorder" class="section">
+      <div style="max-width:640px">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Place New Order</span></div>
+          <div class="card-body">
+            <form id="orderForm" onsubmit="submitOrder(event)">
+              <div class="form-grid" style="gap:18px">
+                <div class="form-group">
+                  <label class="form-label">Order Side</label>
+                  <div class="order-side-group">
+                    <button type="button" class="order-side-btn buy active" id="sideBtn-BUY" onclick="setOrderSide('BUY')">BUY</button>
+                    <button type="button" class="order-side-btn sell" id="sideBtn-SELL" onclick="setOrderSide('SELL')">SELL</button>
+                  </div>
+                  <input type="hidden" id="orderSide" value="BUY" />
+                </div>
+
+                <div class="form-grid form-grid-2" style="gap:14px">
+                  <div class="form-group">
+                    <label class="form-label">Symbol *</label>
+                    <select class="form-control" id="orderSymbol" required>
+                      <option value="">Select symbol…</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Account *</label>
+                    <select class="form-control" id="orderAccount" required>
+                      <option value="ACC-001">ACC-001</option>
+                      <option value="ACC-002">ACC-002</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid form-grid-2" style="gap:14px">
+                  <div class="form-group">
+                    <label class="form-label">Order Type *</label>
+                    <select class="form-control" id="orderType" required onchange="handleOrderTypeChange()">
+                      <option value="MARKET">Market</option>
+                      <option value="LIMIT">Limit</option>
+                      <option value="STOP">Stop</option>
+                      <option value="STOP_LIMIT">Stop Limit</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Time in Force *</label>
+                    <select class="form-control" id="orderTIF" required>
+                      <option value="DAY">Day</option>
+                      <option value="GTC">Good Till Cancelled</option>
+                      <option value="IOC">Immediate or Cancel</option>
+                      <option value="FOK">Fill or Kill</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Quantity *</label>
+                  <input type="number" class="form-control" id="orderQty" placeholder="e.g. 100" min="1" step="1" required />
+                </div>
+
+                <div class="form-grid form-grid-2" style="gap:14px" id="priceFields">
+                  <div class="form-group" id="limitPriceGroup" style="display:none">
+                    <label class="form-label">Limit Price</label>
+                    <input type="number" class="form-control" id="orderLimitPrice" placeholder="0.00" min="0.01" step="0.01" />
+                  </div>
+                  <div class="form-group" id="stopPriceGroup" style="display:none">
+                    <label class="form-label">Stop Price</label>
+                    <input type="number" class="form-control" id="orderStopPrice" placeholder="0.00" min="0.01" step="0.01" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Notes (optional)</label>
+                  <input type="text" class="form-control" id="orderNotes" placeholder="Advisor notes…" maxlength="200" />
+                </div>
+
+                <div id="orderPreview" style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius-sm);padding:14px;display:none">
+                  <div style="font-size:12px;font-weight:700;color:var(--gray-500);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Order Preview</div>
+                  <div id="orderPreviewContent" style="font-size:13px;color:var(--gray-700);line-height:1.8"></div>
+                </div>
+
+                <div style="display:flex;gap:10px;padding-top:4px">
+                  <button type="button" class="btn btn-ghost" onclick="previewOrder()">Preview</button>
+                  <button type="submit" class="btn btn-success" id="submitOrderBtn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    Submit Order
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── ORDER MANAGEMENT ───────────────────── -->
+    <div id="section-orders" class="section">
+      <div class="card" style="margin-bottom:18px">
+        <div class="card-header">
+          <span class="card-title">Order Management</span>
+          <div class="filter-row">
+            <select class="form-control" id="orderFilterAccount" onchange="loadOrders()" style="width:140px">
+              <option value="ACC-001">ACC-001</option>
+              <option value="ACC-002">ACC-002</option>
+            </select>
+            <select class="form-control" id="orderFilterStatus" onchange="loadOrders()" style="width:150px">
+              <option value="">All Statuses</option>
+              <option value="PENDING">Pending</option>
+              <option value="OPEN">Open</option>
+              <option value="FILLED">Filled</option>
+              <option value="PARTIALLY_FILLED">Partial Fill</option>
+              <option value="CANCELLED">Cancelled</option>
+              <option value="REJECTED">Rejected</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="loadOrders()">Refresh</button>
+            <button class="btn btn-success btn-sm" onclick="navigateTo('placeorder')">+ New Order</button>
+          </div>
+        </div>
+      </div>
+      <div id="ordersListBody">
+        <div class="loading-row" style="text-align:center;padding:32px;color:var(--gray-400)">
+          <span class="spinner"></span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ══ MODIFY ORDER MODAL ═══════════════════════════════════════════ -->
+<div class="modal-overlay hidden" id="modifyModal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Modify Order</span>
+      <button class="modal-close" onclick="closeModal('modifyModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modifyOrderId" />
+      <div class="form-grid" style="gap:14px">
+        <div class="form-group">
+          <label class="form-label">New Quantity</label>
+          <input type="number" class="form-control" id="modifyQty" placeholder="Leave blank to keep current" min="1" step="1" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Limit Price</label>
+          <input type="number" class="form-control" id="modifyLimitPrice" placeholder="Leave blank to keep current" min="0.01" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">New Stop Price</label>
+          <input type="number" class="form-control" id="modifyStopPrice" placeholder="Leave blank to keep current" min="0.01" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes</label>
+          <input type="text" class="form-control" id="modifyNotes" placeholder="Update notes…" />
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modifyModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitModifyOrder()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TOAST ══════════════════════════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+   GLOBALS & INIT
+══════════════════════════════════════════════════════════════════ */
+const API = '/api/v1';
+let allHoldings = [];
+let allQuotes   = [];
+let txnPage     = 0;
+const TXN_SIZE  = 10;
+
+// Clock
+setInterval(() => {
+  const now = new Date();
+  document.getElementById('clock').textContent =
+    now.toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'}) + ' · ' +
+    now.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}, 1000);
+
+// Nav
+document.querySelectorAll('.nav-item').forEach(el => {
+  el.addEventListener('click', () => navigateTo(el.dataset.section));
+});
+
+document.getElementById('globalAccount').addEventListener('change', function() {
+  loadAllForCurrentSection();
+});
+
+const SECTION_TITLES = {
+  overview:     ['Overview',          'Wealth management dashboard'],
+  portfolio:    ['Portfolio',         'Holdings & unrealized P&L'],
+  quotes:       ['Market Quotes',     'Live stock quotes'],
+  transactions: ['Transactions',      'Account transaction history'],
+  placeorder:   ['Place Order',       'Submit a new trade order'],
+  orders:       ['Order Management',  'View, modify, and cancel orders'],
+};
+
+function navigateTo(section) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.section === section));
+  document.querySelectorAll('.section').forEach(el => el.classList.toggle('active', el.id === 'section-' + section));
+  const [title, sub] = SECTION_TITLES[section] || [section, ''];
+  document.getElementById('topbarTitle').textContent = title;
+  document.getElementById('topbarSub').textContent = sub;
+  loadSection(section);
+}
+
+function refreshCurrent() {
+  const active = document.querySelector('.section.active');
+  if (active) loadSection(active.id.replace('section-', ''));
+}
+
+function loadAllForCurrentSection() {
+  const active = document.querySelector('.section.active');
+  if (active) loadSection(active.id.replace('section-', ''));
+}
+
+function loadSection(section) {
+  const acct = document.getElementById('globalAccount').value;
+  if (section === 'overview')     loadOverview(acct);
+  if (section === 'portfolio')    loadPortfolio();
+  if (section === 'quotes')       loadQuotes();
+  if (section === 'transactions') loadTransactions();
+  if (section === 'placeorder')   initPlaceOrder();
+  if (section === 'orders')       loadOrders();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   UTILITIES
+══════════════════════════════════════════════════════════════════ */
+function fmt$(n) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('en-US', {style:'currency', currency:'USD', minimumFractionDigits:2, maximumFractionDigits:2}).format(n);
+}
+function fmtN(n, dec=2) {
+  if (n == null) return '—';
+  return new Intl.NumberFormat('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec}).format(n);
+}
+function fmtPct(n) {
+  if (n == null) return '—';
+  return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+function fmtDate(s) {
+  if (!s) return '—';
+  return new Date(s).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+}
+function fmtDateTime(s) {
+  if (!s) return '—';
+  return new Date(s).toLocaleString('en-US', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(API + path, {
+    headers: {'Content-Type': 'application/json'},
+    ...opts,
+  });
+  const json = await res.json();
+  if (!res.ok) throw new Error(json.message || json.error || `HTTP ${res.status}`);
+  return json;
+}
+
+function toast(msg, type = 'info') {
+  const icons = {success:'✓', error:'✕', info:'ℹ'};
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]}</span><span class="toast-msg">${msg}</span>`;
+  const c = document.getElementById('toast-container');
+  c.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+function statusBadge(s) {
+  const map = {
+    FILLED:'badge-green', OPEN:'badge-blue', PENDING:'badge-yellow',
+    PARTIALLY_FILLED:'badge-yellow', CANCELLED:'badge-gray',
+    REJECTED:'badge-red', EXPIRED:'badge-gray',
+    COMPLETED:'badge-green', FAILED:'badge-red', PENDING_SETTLEMENT:'badge-yellow',
+    SETTLED:'badge-green', REVERSED:'badge-red',
+  };
+  return `<span class="badge ${map[s]||'badge-gray'}">${s}</span>`;
+}
+
+function sideBadge(side) {
+  return `<span class="badge ${side==='BUY'?'badge-green':'badge-red'}">${side}</span>`;
+}
+
+function pnlColor(v) { return v >= 0 ? 'color:var(--green)' : 'color:var(--red)'; }
+
+/* ══════════════════════════════════════════════════════════════════
+   OVERVIEW
+══════════════════════════════════════════════════════════════════ */
+async function loadOverview(acct) {
+  acct = acct || document.getElementById('globalAccount').value;
+  try {
+    const [holdResp, txnResp, ordResp, quotesResp] = await Promise.all([
+      apiFetch(`/portfolios/${acct}/holdings`),
+      apiFetch(`/accounts/${acct}/transactions?page=0&size=5`),
+      apiFetch(`/orders?accountId=${acct}`),
+      apiFetch('/quotes'),
+    ]);
+
+    const holdings = holdResp.data || [];
+    const txns     = txnResp.data?.content || [];
+    const orders   = ordResp.data || [];
+    const quotes   = quotesResp.data || [];
+    const qMap     = Object.fromEntries(quotes.map(q => [q.symbol, q]));
+
+    // Stats
+    let total = 0, totalCost = 0;
+    holdings.forEach(h => {
+      const q = qMap[h.symbol];
+      const price = parseFloat(q?.currentPrice ?? h.avgCostPrice);
+      const cost  = parseFloat(h.avgCostPrice);
+      const qty   = parseFloat(h.quantity);
+      total     += price * qty;
+      totalCost += cost  * qty;
+    });
+    const pnl = total - totalCost;
+    const openOrders = orders.filter(o => ['OPEN','PENDING','PARTIALLY_FILLED'].includes(o.status));
+
+    document.getElementById('ov-total').textContent = fmt$(total);
+    document.getElementById('ov-change').textContent = (pnl >= 0 ? '+' : '') + fmt$(pnl);
+    document.getElementById('ov-change').className = 'stat-change ' + (pnl >= 0 ? 'up' : 'down');
+    document.getElementById('ov-positions').textContent = holdings.length;
+    document.getElementById('ov-open').textContent = openOrders.length;
+    document.getElementById('ov-txns').textContent = txnResp.data?.totalElements ?? txns.length;
+
+    // Top holdings
+    const topH = [...holdings].sort((a,b) => {
+      const av = parseFloat(qMap[a.symbol]?.currentPrice ?? a.avgCostPrice) * parseFloat(a.quantity);
+      const bv = parseFloat(qMap[b.symbol]?.currentPrice ?? b.avgCostPrice) * parseFloat(b.quantity);
+      return bv - av;
+    }).slice(0, 5);
+    document.getElementById('overviewHoldings').innerHTML = topH.length
+      ? topH.map(h => {
+          const q = qMap[h.symbol];
+          const price = parseFloat(q?.currentPrice ?? h.avgCostPrice);
+          const cost  = parseFloat(h.avgCostPrice);
+          const qty   = parseFloat(h.quantity);
+          const mv  = price * qty;
+          const pnl = (price - cost) * qty;
+          return `<tr>
+            <td><strong>${h.symbol}</strong></td>
+            <td class="right">${fmtN(h.quantity,0)}</td>
+            <td class="right">${fmt$(mv)}</td>
+            <td class="right" style="${pnlColor(pnl)}">${pnl>=0?'+':''}${fmt$(pnl)}</td>
+          </tr>`;
+        }).join('')
+      : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--gray-400)">No holdings</td></tr>';
+
+    // Recent txns
+    document.getElementById('overviewTxns').innerHTML = txns.length
+      ? txns.map(t => `<tr>
+          <td><strong>${t.symbol}</strong></td>
+          <td>${t.transactionType}</td>
+          <td class="right">${fmt$(t.totalAmount)}</td>
+          <td>${statusBadge(t.status)}</td>
+        </tr>`).join('')
+      : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--gray-400)">No transactions</td></tr>';
+
+    // Market snapshot
+    document.getElementById('overviewQuotes').innerHTML = quotes.map(q => {
+      const up = q.priceChange >= 0;
+      return `<tr>
+        <td><strong>${q.symbol}</strong></td>
+        <td>${q.companyName}</td>
+        <td>${q.sector || '—'}</td>
+        <td class="right mono">${fmt$(q.currentPrice)}</td>
+        <td class="right" style="${pnlColor(q.priceChange)}">${fmt$(q.priceChange)}</td>
+        <td class="right" style="${pnlColor(q.priceChangePct)}">${fmtPct(q.priceChangePct)}</td>
+        <td class="right mono">${fmtN(q.volume,0)}</td>
+      </tr>`;
+    }).join('');
+
+  } catch(e) {
+    toast('Failed to load overview: ' + e.message, 'error');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PORTFOLIO
+══════════════════════════════════════════════════════════════════ */
+async function loadPortfolio() {
+  const acct = document.getElementById('globalAccount').value;
+  document.getElementById('holdingsBody').innerHTML = '<tr class="loading-row"><td colspan="9"><span class="spinner"></span></td></tr>';
+  try {
+    const [holdResp, quotesResp] = await Promise.all([
+      apiFetch(`/portfolios/${acct}/holdings`),
+      apiFetch('/quotes'),
+    ]);
+    allHoldings = holdResp.data || [];
+    const quotes = quotesResp.data || [];
+    const qMap = Object.fromEntries(quotes.map(q => [q.symbol, q]));
+
+    let totalVal = 0, totalCost = 0;
+    allHoldings.forEach(h => {
+      const q = qMap[h.symbol];
+      h._price = parseFloat(q?.currentPrice ?? h.avgCostPrice);
+      h._cost  = parseFloat(h.avgCostPrice);
+      h._qty   = parseFloat(h.quantity);
+      h._mv    = h._price * h._qty;
+      h._pnl   = (h._price - h._cost) * h._qty;
+      h._pct   = h._cost > 0 ? ((h._price - h._cost) / h._cost) * 100 : 0;
+      h._sector= q?.sector || '—';
+      h._name  = q?.companyName || h.symbol;
+      totalVal  += h._mv;
+      totalCost += h._cost * h._qty;
+    });
+
+    const totalPnl = totalVal - totalCost;
+    const totalPct = totalCost > 0 ? (totalPnl / totalCost) * 100 : 0;
+
+    document.getElementById('pf-value').textContent = fmt$(totalVal);
+    document.getElementById('pf-pnl').textContent = (totalPnl>=0?'+':'') + fmt$(totalPnl);
+    document.getElementById('pf-pnl').style.color = totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
+    document.getElementById('pf-pnl-pct').textContent = fmtPct(totalPct);
+    document.getElementById('pf-pnl-pct').className = 'stat-change ' + (totalPnl>=0?'up':'down');
+    document.getElementById('pf-count').textContent = allHoldings.length;
+    document.getElementById('pf-cost').textContent = fmt$(totalCost);
+
+    renderHoldings(allHoldings);
+  } catch(e) {
+    document.getElementById('holdingsBody').innerHTML = '<tr class="loading-row"><td colspan="9">Failed to load</td></tr>';
+    toast('Portfolio error: ' + e.message, 'error');
+  }
+}
+
+function renderHoldings(holdings) {
+  document.getElementById('holdingsBody').innerHTML = holdings.length
+    ? holdings.map(h => {
+        const pct = Math.min(Math.abs(h._pct) / 20 * 100, 100);
+        return `<tr>
+          <td><strong>${h.symbol}</strong></td>
+          <td style="color:var(--gray-600)">${h._name}</td>
+          <td class="right mono">${fmtN(h.quantity,0)}</td>
+          <td class="right mono">${fmt$(h._cost)}</td>
+          <td class="right mono">${fmt$(h._price)}</td>
+          <td class="right mono"><strong>${fmt$(h._mv)}</strong></td>
+          <td class="right" style="${pnlColor(h._pnl)}"><strong>${h._pnl>=0?'+':''}${fmt$(h._pnl)}</strong>
+            <div class="pnl-bar"><div class="pnl-bar-fill ${h._pnl>=0?'positive':'negative'}" style="width:${pct}%"></div></div>
+          </td>
+          <td class="right" style="${pnlColor(h._pct)}">${fmtPct(h._pct)}</td>
+          <td><span class="badge badge-gray" style="font-size:10px">${h._sector}</span></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="9" style="text-align:center;padding:32px;color:var(--gray-400)">No holdings found for this account.</td></tr>';
+}
+
+function filterHoldings() {
+  const q = document.getElementById('holdingSearch').value.toLowerCase();
+  renderHoldings(q ? allHoldings.filter(h => h.symbol.toLowerCase().includes(q) || h._name.toLowerCase().includes(q)) : allHoldings);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   QUOTES
+══════════════════════════════════════════════════════════════════ */
+async function loadQuotes() {
+  document.getElementById('quotesGrid').innerHTML = '<div style="color:var(--gray-400);padding:20px"><span class="spinner"></span> Loading…</div>';
+  try {
+    const resp = await apiFetch('/quotes');
+    allQuotes = resp.data || [];
+    renderQuoteTiles(allQuotes);
+  } catch(e) {
+    toast('Quotes error: ' + e.message, 'error');
+  }
+}
+
+function renderQuoteTiles(quotes) {
+  document.getElementById('quotesGrid').innerHTML = quotes.map(q => {
+    const up = q.priceChange >= 0;
+    return `<div class="quote-tile" onclick="showQuoteDetail('${q.symbol}')">
+      <div class="qt-symbol">${q.symbol}</div>
+      <div class="qt-name">${q.companyName}</div>
+      <div class="qt-price">${fmt$(q.currentPrice)}</div>
+      <div class="qt-change ${up?'up':'down'}">${up?'▲':'▼'} ${fmt$(Math.abs(q.priceChange))} (${fmtPct(q.priceChangePct)})</div>
+    </div>`;
+  }).join('');
+}
+
+function filterQuotes() {
+  const q = document.getElementById('quoteSearch').value.toLowerCase();
+  renderQuoteTiles(q ? allQuotes.filter(x => x.symbol.toLowerCase().includes(q) || x.companyName.toLowerCase().includes(q)) : allQuotes);
+}
+
+function showQuoteDetail(symbol) {
+  const q = allQuotes.find(x => x.symbol === symbol);
+  if (!q) return;
+  document.getElementById('quoteDetailTitle').textContent = `${q.symbol} — ${q.companyName}`;
+  const fields = [
+    ['Current Price', fmt$(q.currentPrice)],
+    ['Open',          fmt$(q.openPrice)],
+    ['High',          fmt$(q.highPrice)],
+    ['Low',           fmt$(q.lowPrice)],
+    ['Previous Close',fmt$(q.previousClose)],
+    ['Change',        `<span style="${pnlColor(q.priceChange)}">${fmt$(q.priceChange)}</span>`],
+    ['Change %',      `<span style="${pnlColor(q.priceChangePct)}">${fmtPct(q.priceChangePct)}</span>`],
+    ['Volume',        fmtN(q.volume,0)],
+    ['Avg Volume',    fmtN(q.avgVolume,0)],
+    ['Market Cap',    q.marketCap ? fmt$(q.marketCap) : '—'],
+    ['52W High',      fmt$(q.weekHigh52)],
+    ['52W Low',       fmt$(q.weekLow52)],
+    ['P/E Ratio',     q.peRatio ? fmtN(q.peRatio,2) : '—'],
+    ['Sector',        q.sector || '—'],
+    ['Exchange',      q.exchange || '—'],
+    ['Last Updated',  fmtDateTime(q.lastUpdated)],
+  ];
+  document.getElementById('quoteDetailBody').innerHTML = fields.map(([l,v]) => `
+    <div style="background:var(--gray-50);border:1px solid var(--gray-200);border-radius:6px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">${l}</div>
+      <div style="font-size:14px;font-weight:600;color:var(--gray-900)">${v}</div>
+    </div>`).join('');
+  document.getElementById('quoteDetailCard').style.display = '';
+  document.getElementById('quoteDetailCard').scrollIntoView({behavior:'smooth'});
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   TRANSACTIONS
+══════════════════════════════════════════════════════════════════ */
+async function loadTransactions() {
+  const acct   = document.getElementById('globalAccount').value;
+  const symbol = document.getElementById('txnSymbolFilter').value.trim().toUpperCase();
+  document.getElementById('txnBody').innerHTML = '<tr class="loading-row"><td colspan="8"><span class="spinner"></span></td></tr>';
+  try {
+    let resp;
+    if (symbol) {
+      resp = await apiFetch(`/accounts/${acct}/transactions/symbol/${symbol}`);
+      const txns = resp.data || [];
+      renderTxns(txns);
+      document.getElementById('txnPageInfo').textContent = `${txns.length} records for ${symbol}`;
+      document.getElementById('txnPageBtns').innerHTML = '';
+    } else {
+      resp = await apiFetch(`/accounts/${acct}/transactions?page=${txnPage}&size=${TXN_SIZE}`);
+      const page = resp.data;
+      renderTxns(page.content || []);
+      renderTxnPagination(page);
+    }
+  } catch(e) {
+    document.getElementById('txnBody').innerHTML = '<tr class="loading-row"><td colspan="8">Failed to load</td></tr>';
+    toast('Transactions error: ' + e.message, 'error');
+  }
+}
+
+function renderTxns(txns) {
+  document.getElementById('txnBody').innerHTML = txns.length
+    ? txns.map(t => `<tr>
+        <td class="mono" style="font-size:11px;color:var(--gray-400)">${t.transactionId}</td>
+        <td><strong>${t.symbol}</strong></td>
+        <td><span class="badge ${t.transactionType==='BUY'?'badge-green':t.transactionType==='SELL'?'badge-red':'badge-blue'}">${t.transactionType}</span></td>
+        <td class="right mono">${fmtN(t.quantity,0)}</td>
+        <td class="right mono">${fmt$(t.executionPrice)}</td>
+        <td class="right mono"><strong>${fmt$(t.totalAmount)}</strong></td>
+        <td>${statusBadge(t.status)}</td>
+        <td>${fmtDateTime(t.transactionDate)}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--gray-400)">No transactions found.</td></tr>';
+}
+
+function renderTxnPagination(page) {
+  const total   = page.totalElements;
+  const size    = page.size;
+  const current = page.number;
+  const pages   = page.totalPages;
+  document.getElementById('txnPageInfo').textContent = `${total} records — page ${current+1} of ${pages}`;
+  const btns = document.getElementById('txnPageBtns');
+  btns.innerHTML = '';
+  const prev = document.createElement('button');
+  prev.className = 'page-btn'; prev.textContent = '‹ Prev';
+  prev.disabled = current === 0;
+  prev.onclick = () => { txnPage = current - 1; loadTransactions(); };
+  btns.appendChild(prev);
+  for (let i = Math.max(0, current-2); i < Math.min(pages, current+3); i++) {
+    const b = document.createElement('button');
+    b.className = 'page-btn' + (i===current?' active':'');
+    b.textContent = i+1;
+    const pg = i;
+    b.onclick = () => { txnPage = pg; loadTransactions(); };
+    btns.appendChild(b);
+  }
+  const next = document.createElement('button');
+  next.className = 'page-btn'; next.textContent = 'Next ›';
+  next.disabled = current >= pages - 1;
+  next.onclick = () => { txnPage = current + 1; loadTransactions(); };
+  btns.appendChild(next);
+}
+
+function clearTxnFilter() {
+  document.getElementById('txnSymbolFilter').value = '';
+  txnPage = 0;
+  loadTransactions();
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   PLACE ORDER
+══════════════════════════════════════════════════════════════════ */
+function initPlaceOrder() {
+  // Populate symbols from cached quotes
+  const sel = document.getElementById('orderSymbol');
+  sel.innerHTML = '<option value="">Select symbol…</option>';
+  allQuotes.forEach(q => {
+    const opt = document.createElement('option');
+    opt.value = q.symbol;
+    opt.textContent = `${q.symbol} — ${q.companyName}`;
+    sel.appendChild(opt);
+  });
+  // Sync account
+  document.getElementById('orderAccount').value = document.getElementById('globalAccount').value;
+  document.getElementById('orderPreview').style.display = 'none';
+}
+
+function setOrderSide(side) {
+  document.getElementById('orderSide').value = side;
+  document.getElementById('sideBtn-BUY').classList.toggle('active', side === 'BUY');
+  document.getElementById('sideBtn-SELL').classList.toggle('active', side === 'SELL');
+}
+
+function handleOrderTypeChange() {
+  const t = document.getElementById('orderType').value;
+  document.getElementById('limitPriceGroup').style.display = ['LIMIT','STOP_LIMIT'].includes(t) ? '' : 'none';
+  document.getElementById('stopPriceGroup').style.display  = ['STOP','STOP_LIMIT'].includes(t) ? '' : 'none';
+}
+
+function previewOrder() {
+  const side   = document.getElementById('orderSide').value;
+  const symbol = document.getElementById('orderSymbol').value;
+  const acct   = document.getElementById('orderAccount').value;
+  const type   = document.getElementById('orderType').value;
+  const qty    = document.getElementById('orderQty').value;
+  const tif    = document.getElementById('orderTIF').value;
+  if (!symbol || !qty) { toast('Please fill in Symbol and Quantity', 'error'); return; }
+  const q = allQuotes.find(x => x.symbol === symbol);
+  const price = q?.currentPrice;
+  const estVal = price && qty ? price * qty : null;
+  document.getElementById('orderPreviewContent').innerHTML = `
+    <strong>${side}</strong> ${qty} shares of <strong>${symbol}</strong><br>
+    Order Type: ${type} · Time in Force: ${tif}<br>
+    Account: ${acct}<br>
+    ${price ? `Est. Market Price: ${fmt$(price)} · Est. Total: ${fmt$(estVal)}` : ''}
+  `;
+  document.getElementById('orderPreview').style.display = '';
+}
+
+async function submitOrder(e) {
+  e.preventDefault();
+  const btn = document.getElementById('submitOrderBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px"></span> Submitting…';
+  try {
+    const body = {
+      symbol:        document.getElementById('orderSymbol').value,
+      accountId:     document.getElementById('orderAccount').value,
+      side:          document.getElementById('orderSide').value,
+      orderType:     document.getElementById('orderType').value,
+      quantity:      parseFloat(document.getElementById('orderQty').value),
+      timeInForce:   document.getElementById('orderTIF').value,
+    };
+    const lp = document.getElementById('orderLimitPrice').value;
+    const sp = document.getElementById('orderStopPrice').value;
+    const nt = document.getElementById('orderNotes').value;
+    if (lp) body.limitPrice  = parseFloat(lp);
+    if (sp) body.stopPrice   = parseFloat(sp);
+    if (nt) body.notes       = nt;
+
+    const resp = await apiFetch('/orders', { method: 'POST', body: JSON.stringify(body) });
+    toast(`Order placed! ID: ${resp.data?.orderId || 'N/A'}`, 'success');
+    document.getElementById('orderForm').reset();
+    setOrderSide('BUY');
+    handleOrderTypeChange();
+    document.getElementById('orderPreview').style.display = 'none';
+    document.getElementById('orderAccount').value = document.getElementById('globalAccount').value;
+  } catch(e) {
+    toast('Order failed: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Submit Order';
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   ORDERS
+══════════════════════════════════════════════════════════════════ */
+async function loadOrders() {
+  const acct   = document.getElementById('orderFilterAccount').value;
+  const status = document.getElementById('orderFilterStatus').value;
+  document.getElementById('ordersListBody').innerHTML = '<div style="text-align:center;padding:32px;color:var(--gray-400)"><span class="spinner"></span></div>';
+  try {
+    let url = `/orders?accountId=${acct}`;
+    if (status) url += `&status=${status}`;
+    const resp = await apiFetch(url);
+    const orders = resp.data || [];
+    renderOrderList(orders);
+  } catch(e) {
+    document.getElementById('ordersListBody').innerHTML = '<div style="padding:20px;color:var(--red)">Failed to load orders.</div>';
+    toast('Orders error: ' + e.message, 'error');
+  }
+}
+
+function renderOrderList(orders) {
+  if (!orders.length) {
+    document.getElementById('ordersListBody').innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <p>No orders found for this filter.</p>
+      </div>`;
+    return;
+  }
+  const canModify = o => ['OPEN','PENDING'].includes(o.status);
+  const canCancel = o => ['OPEN','PENDING','PARTIALLY_FILLED'].includes(o.status);
+
+  document.getElementById('ordersListBody').innerHTML = `<div class="order-list">` +
+    orders.map(o => `
+      <div class="order-card">
+        <div class="order-card-body">
+          <div class="order-card-top">
+            ${sideBadge(o.side)}
+            <span class="order-symbol">${o.symbol}</span>
+            <span class="badge badge-gray">${o.orderType}</span>
+            ${statusBadge(o.status)}
+            <span style="font-size:12px;color:var(--gray-400)">${o.timeInForce}</span>
+          </div>
+          <div class="order-meta">
+            <strong>Qty:</strong> ${fmtN(o.quantity,0)}
+            ${o.filledQuantity ? ` · <strong>Filled:</strong> ${fmtN(o.filledQuantity,0)}` : ''}
+            ${o.limitPrice  ? ` · <strong>Limit:</strong> ${fmt$(o.limitPrice)}`  : ''}
+            ${o.stopPrice   ? ` · <strong>Stop:</strong> ${fmt$(o.stopPrice)}`    : ''}
+            ${o.averageFillPrice ? ` · <strong>Avg Fill:</strong> ${fmt$(o.averageFillPrice)}` : ''}
+            · <strong>Account:</strong> ${o.accountId}
+            · <span style="color:var(--gray-400)">${fmtDateTime(o.createdAt)}</span>
+          </div>
+          ${o.notes ? `<div class="order-meta" style="margin-top:4px;color:var(--gray-400);font-style:italic">${o.notes}</div>` : ''}
+        </div>
+        <div class="order-card-actions">
+          ${canModify(o) ? `<button class="btn btn-ghost btn-sm" onclick="openModifyModal('${o.orderId}', ${o.quantity}, ${o.limitPrice||'null'}, ${o.stopPrice||'null'})">Modify</button>` : ''}
+          ${canCancel(o) ? `<button class="btn btn-danger btn-sm" onclick="cancelOrder('${o.orderId}')">Cancel</button>` : ''}
+          <button class="btn btn-ghost btn-sm" onclick="viewOrderDetail('${o.orderId}')">Detail</button>
+        </div>
+      </div>`).join('') + `</div>`;
+}
+
+function openModifyModal(orderId, qty, limitPrice, stopPrice) {
+  document.getElementById('modifyOrderId').value = orderId;
+  document.getElementById('modifyQty').value = qty || '';
+  document.getElementById('modifyLimitPrice').value = limitPrice || '';
+  document.getElementById('modifyStopPrice').value = stopPrice || '';
+  document.getElementById('modifyNotes').value = '';
+  document.getElementById('modifyModal').classList.remove('hidden');
+}
+
+async function submitModifyOrder() {
+  const orderId = document.getElementById('modifyOrderId').value;
+  const body = {};
+  const qty  = document.getElementById('modifyQty').value;
+  const lp   = document.getElementById('modifyLimitPrice').value;
+  const sp   = document.getElementById('modifyStopPrice').value;
+  const nt   = document.getElementById('modifyNotes').value;
+  if (qty) body.quantity   = parseFloat(qty);
+  if (lp)  body.limitPrice = parseFloat(lp);
+  if (sp)  body.stopPrice  = parseFloat(sp);
+  if (nt)  body.notes      = nt;
+  if (!Object.keys(body).length) { toast('No changes provided', 'error'); return; }
+  try {
+    await apiFetch(`/orders/${orderId}`, { method: 'PATCH', body: JSON.stringify(body) });
+    toast('Order updated successfully', 'success');
+    closeModal('modifyModal');
+    loadOrders();
+  } catch(e) {
+    toast('Modify failed: ' + e.message, 'error');
+  }
+}
+
+async function cancelOrder(orderId) {
+  if (!confirm(`Cancel order ${orderId}?`)) return;
+  try {
+    await apiFetch(`/orders/${orderId}`, { method: 'DELETE' });
+    toast('Order cancelled', 'success');
+    loadOrders();
+  } catch(e) {
+    toast('Cancel failed: ' + e.message, 'error');
+  }
+}
+
+async function viewOrderDetail(orderId) {
+  try {
+    const resp = await apiFetch(`/orders/${orderId}`);
+    const o = resp.data;
+    alert(`Order Detail\n─────────────────\nID: ${o.orderId}\nSymbol: ${o.symbol}\nSide: ${o.side}\nType: ${o.orderType}\nStatus: ${o.status}\nQty: ${o.quantity}\nFilled: ${o.filledQuantity || 0}\nLimit: ${o.limitPrice || '—'}\nStop: ${o.stopPrice || '—'}\nAvg Fill: ${o.averageFillPrice || '—'}\nCreated: ${fmtDateTime(o.createdAt)}\nUpdated: ${fmtDateTime(o.updatedAt)}`);
+  } catch(e) {
+    toast('Detail error: ' + e.message, 'error');
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   BOOTSTRAP
+══════════════════════════════════════════════════════════════════ */
+(async function init() {
+  await loadQuotes();           // populate allQuotes for Place Order
+  loadOverview();               // default section
+})();
+</script>
+</body>
+</html>
